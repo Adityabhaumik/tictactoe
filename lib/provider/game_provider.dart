@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:tictactoe/constants.dart';
+import 'package:tictactoe/models/computer.dart';
 
 class GameProvider extends ChangeNotifier {
   List<List<boardStatus>> board = [
@@ -101,7 +102,8 @@ class GameProvider extends ChangeNotifier {
           : currentTurn = boardStatus.player2;
       notifyListeners();
       if (isVsComputer == true && currentTurn == boardStatus.player2) {
-        computerMove(context);
+        //computerMove(context);
+        aiMove(context);
         currentTurn = boardStatus.player1;
       }
     }
@@ -133,5 +135,35 @@ class GameProvider extends ChangeNotifier {
     //   }
     // }
     return;
+  }
+
+  void aiMove(BuildContext context) {
+    bool moveMade = false;
+    var ai = ComputerMoveCalculator();
+    List<int> boardInArray = [];
+    for (int i = 0; i < 3; i++) {
+      for (int j = 0; j < 3; j++) {
+        if (board[i][j] == boardStatus.player1) {
+          boardInArray.add(1);
+        } else if (board[i][j] == boardStatus.player2) {
+          boardInArray.add(-1);
+        } else {
+          boardInArray.add(0);
+        }
+      }
+    }
+    var bestMove = ai.findBestMove(boardInArray, -1);
+    if(bestMove.move<=2){
+      move(0, bestMove.move, context);
+    }
+    else if(bestMove.move<=5){
+      int col=bestMove.move%3;
+      move(1, col, context);
+    }
+    else if(bestMove.move<=8){
+      int col=bestMove.move%3;
+      move(2, col, context);
+    }
+    //print(bestMove.move);
   }
 }
